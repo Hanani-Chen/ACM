@@ -1118,6 +1118,42 @@ struct LineBase{
 	}
 }
 ```
+> 支持查询区间查询，动态插入数到末尾，贪心的思想，d[r][i]用下标最大的l对应元素（l<=r）插入到线性基,pos[r][i]维护相应下标。
+> 也可以离线做，内存不需要开N倍，只需要一倍，将查询的区间按r排序
+```
+struct LineBase{
+	int d[N][32],pos[N][32];
+	void init(){
+		memset(d,0,sizeof(d));
+		memset(pos,0,sizeof(pos));
+	}
+	void Insert(int x,int id,int r){
+		for(int i=30;i>=0;--i){
+			if((x>>i)&1){
+				if(!d[r][i]){
+					d[r][i]=x;
+					pos[r][i]=id;
+					return;
+				}
+				else if(pos[r][i]<id)swap(d[r][i],x),swap(pos[r][i],id);
+				x^=d[r][i];
+			}
+		}
+	}
+	void cp(int r){
+		for(int i=30;i>=0;--i)
+			d[r][i]=d[r-1][i],pos[r][i]=pos[r-1][i];
+	}
+	int getMax(int low,int r){
+		int res=0;
+		for(int i=30;i>=0;--i){
+			if(pos[r][i]<low)continue;
+			if((res^d[r][i])>res)res^=d[r][i];
+		}
+		return res;
+	}
+}LB;
+```
 
 ### FFT高精度
 - [FFT](https://zhuanlan.zhihu.com/p/31584464)
